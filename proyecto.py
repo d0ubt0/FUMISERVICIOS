@@ -65,6 +65,11 @@ class GestorDB:
             self.conexion.commit()
         except:
             print("Error inesperado!")
+
+    def ver_solicitudes(self):
+        self.cursor.execute('SELECT * FROM Solicitud')
+        return self.cursor.fetchall()
+
       
     def leer_usuario(self, id:int):
         self.cursor.execute("SELECT * FROM Usuario WHERE id= ? " , (id,))
@@ -79,11 +84,28 @@ class GestorDB:
         Returns:
             list[any]: Retorna una lista con el usuario y los dias en los que está ocupado
         """        
-        self.cursor.execute("""SELECT Usuario.id, Usuario.nombre, Agenda.fecha as fecha_ocupada FROM Usuario
+        self.cursor.execute("""SELECT Usuario.id, Usuario.nombre, Agenda.fecha as fecha_ocupada, Usuario.tipo FROM Usuario
                             LEFT JOIN Agenda
                             ON Usuario.id = Agenda.id_usuario
                             WHERE Usuario.id = ? AND
                             fecha_ocupada > date('now');""",(id,))
+
+        return(self.cursor.fetchall())
+    
+    def agenda_fecha(self, fecha:str) -> list[any]:
+        """Funcion dedicada a cumplir la HU4, permitiendo ver los empleados disponibles en un horario.
+
+        Args:
+            fecha (str): fecha por filtrar
+
+        Returns:
+            list[any]: Retorna una lista con los usuarios disponibles en una fecha
+        """
+        self.cursor.execute(f"""SELECT Usuario.id, Usuario.nombre, Agenda.fecha as fecha_ocupada, Usuario.tipo FROM Usuario
+                            LEFT JOIN Agenda
+                            ON Usuario.id = Agenda.id_usuario
+                            WHERE fecha_ocupada <> '?' AND
+                            AND Usuario.tipo in ('TEspecializado','EqTecnico');""", (fecha,))
 
         return(self.cursor.fetchall())
     
@@ -99,7 +121,6 @@ class GestorDB:
     def cerrar_conexion(self):
         if self.conexion:
             self.conexion.close()     
-
 
 ##
 ##
@@ -156,9 +177,10 @@ def registro_usuario(db:GestorDB):
     def TipoFun():
         print("Ingresa tu tipo de empleado")
         tipo=input(str())
-        if tipo=="Ctecnico" or tipo=="TEspecializado" or tipo =="ACliente" or tipo== "Empleado":
+        if tipo in ('CTecnico', 'TEspecializado', 'ACliente', 'EqTecnico'):
             return tipo
         else:
+            print("Rol no valido")
             TipoFun()
 
     nombre = nombreFun() 
@@ -207,6 +229,16 @@ def ver_agenda_empleado():
     except ValueError:
         print("Por favor ingrese un id válido")
 
+def ver_agenda_fecha():
+    fecha = input("Ingrese una fecha para ver los empleados disponibles: ")
+    try:
+        print(f"Empleados disponibles:\n")
+        empleados = db.agenda_fecha(fecha)
+        for empleado in empleados:
+            print(f"id: {empleado[0]}, Nombre: {empleado[1]}, Rol: {empleado[3]}")
+    except ValueError:
+        print("Por favor ingrese una fecha válida")
+
 def menu():
     os.system('cls')
     usuario_sesion = iniciar_sesion()
@@ -216,7 +248,9 @@ def menu():
 
     while True:
         if tipo == 'CTecnico':
-            pass
+            xd = CTenico()
+            if xd:
+                break
         elif tipo == 'TEspecializado':
             pass
         elif tipo == 'ACliente':
@@ -228,29 +262,32 @@ def CTenico():
     print("¿Con que vas a trabajar hoy?")
     opcion = int(input("""Seleciona una opcion del menu
     1.Registrar empleados
-    2.Ver empleados disponibles
-    3.Ver solicitudes
-    4.Asignar tecnico
+    2.Añadir solicitudes
+    3.Ver disponibilidad de empleados
+    4.Asignar tecnico especializado
     5.Salir 
     Opcion: """))
     if opcion == 1:
-        pass
+        registro_usuario(db)
 
     elif opcion == 2:
-        pass
+        crear_solicitud()
 
     elif opcion == 3:
-        pass
-
+        ver_agenda_fecha()
+        
     elif opcion == 4:
         pass
 
     elif opcion == 5:
         print("¡Hasta luego!")
+        return True
 
 # Crear una instancia de la base de datos
 db = GestorDB()
 
+menu()
+#ver_agenda_empleado()
 # Iniciar sesión con un usuario
 
 #menu()
@@ -266,4 +303,4 @@ db = GestorDB()
 
         
         
-crear_solicitud()
+#screar_solicitud()
