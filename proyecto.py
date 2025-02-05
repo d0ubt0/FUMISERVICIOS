@@ -55,7 +55,7 @@ class GestorDB:
             null: Retorna null si no encuentra nada en la base de datos
         """ 
 
-        self.cursor.execute('SELECT * FROM usuario WHERE id = ? AND contrasena = ?', (id, contrasena))
+        self.cursor.execute('SELECT * FROM Usuario WHERE id = ? AND contrasena = ?', (id, contrasena))
         return self.cursor.fetchone()
 
     def agregar_solicitud(self, id_cliente:int, id_usuario:int, descripcion:str, tipo_servicio:str, direccion:str):
@@ -113,10 +113,10 @@ class GestorDB:
 
         return(self.cursor.fetchall())
     
-    def ingresar_usuario(self,nombre,email,contrasena,tipo): 
+    def ingresar_usuario(self,id,nombre,email,contrasena,tipo): 
         try:
-            sql=("INSERT INTO Usuario values (null,?,?,?,?)")
-            valores=(nombre,email,contrasena,tipo)
+            sql="INSERT INTO Usuario VALUES (?,?,?,?,?)"
+            valores=(id,nombre,email,contrasena,tipo)
             self.cursor.execute(sql,valores)
             self.conexion.commit()
         except sqlite3.Error as error:
@@ -154,45 +154,57 @@ def iniciar_sesion():
 
 #Historia de Usuario 2
 def registro_usuario(db:GestorDB):
+    def idFun():
+        while True:
+            id =input("Ingresa la cedula: ").strip()
+            if len(id)==0:
+                print("No puedes dejar esto vacio")
+                continue
+            elif not(id.isdigit()):
+                print("Debe ser un numero")
+                continue
+            return id
+    
     def nombreFun():
-        print("Ingresa tu nombre")
-        nombre=input(str())
-        if len(nombre)==0:
-            print("No puedes dejar esto vacio")
-            nombreFun()
-        return nombre
+        while True:
+            nombre=input("Ingresa tu nombre: ").strip()
+            if len(nombre)==0:
+                print("No puedes dejar esto vacio")
+                continue
+            return nombre
   
     def emailFun():
-        print("Ingresa tu email")
-        email=input(str())
-        if len(email)==0:
-            print("No puedes dejar esto vacio")
-            emailFun()
-        return email
+        while True:
+            email=input("Ingresa tu email: ").strip()
+            if len(email)==0:
+                print("No puedes dejar esto vacio")
+                continue
+            return email
 
     def contraFun():
-        print("Ingresa tu contraseña")
-        contra=input(str())
-        if len(contra)<8:
-            print("La contraseña debe tener por lo menos 8 caracteres")
-            contraFun()
-        return contra
+        while True:
+            contra=input("Ingresa tu contraseña: ").strip()
+            if len(contra)<8:
+                print("La contraseña debe tener por lo menos 8 caracteres")
+                continue
+            return contra
     
     def TipoFun():
-        print("Ingresa tu tipo de empleado")
-        tipo=input(str())
-        if tipo in ('CTecnico', 'TEspecializado', 'ACliente', 'EqTecnico'):
-            return tipo
-        else:
-            print("Rol no valido")
-            TipoFun()
+        while True:
+            tipo=input("Ingresa tu tipo de empleado (CTecnico, TEspecializado, ACliente, EqTecnico): ").strip()
+            if tipo in ('CTecnico', 'TEspecializado', 'ACliente', 'EqTecnico'):
+                return tipo
+            else:
+                print("Rol no valido")
+        
 
+    id = idFun()
     nombre = nombreFun() 
     contrasena = contraFun()     
     tipo = TipoFun()
-    email=emailFun()
+    email= emailFun()
 
-    db.ingresar_usuario(nombre,email,contrasena,tipo)
+    db.ingresar_usuario(id,nombre,email,contrasena,tipo)
 
 #Historia de Usuario 3     
 def crear_solicitud():
@@ -280,7 +292,7 @@ def CTecnico():
         print("¿Con que vas a trabajar hoy?")
         opcion = int(input("""Seleciona una opcion del menu
         1.Registrar empleados
-        2.Ver disponibilidad de empleados
+        2.Ver disponibilidad de Tecnico Especializados
         3.Asignar tecnico especializado
         4.Salir 
         Opcion: """))
