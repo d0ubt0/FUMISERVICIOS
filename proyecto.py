@@ -32,7 +32,7 @@ class Solicitud:
       
     def agregar_solicitud(self):
         db.agregar_solicitud(self.id_cliente, self.id_usuario, self.descripcion,self.tipo_servicio,self.direccion)
-        print("Solicitud agregada!")
+
 
 class GestorDB:
     def __init__(self, path_db = 'fumiServicios.db'):
@@ -63,8 +63,10 @@ class GestorDB:
             self.cursor.execute("INSERT INTO Solicitud (id_cliente, id_usuario, descripcion, tipo_servicio, direccion) VALUES (?, ?, ?, ?,?)",
                                 (id_cliente, id_usuario, descripcion, tipo_servicio, direccion))
             self.conexion.commit()
-        except:
-            print("Error inesperado!")
+        except sqlite3.IntegrityError:
+            print("\nEl cliente o Usuario no existen! \n")
+        else:
+            print("\nSolicitud agregada\n")
 
     def ver_solicitudes(self):
         self.cursor.execute('SELECT * FROM Solicitud')
@@ -101,11 +103,13 @@ class GestorDB:
         Returns:
             list[any]: Retorna una lista con los usuarios disponibles en una fecha
         """
-        self.cursor.execute(f"""SELECT Usuario.id, Usuario.nombre, Agenda.fecha as fecha_ocupada, Usuario.tipo FROM Usuario
-                            LEFT JOIN Agenda
-                            ON Usuario.id = Agenda.id_usuario
-                            WHERE fecha_ocupada <> '?' AND
-                            AND Usuario.tipo in ('TEspecializado','EqTecnico');""", (fecha,))
+        self.cursor.execute(f"""SELECT Usuario.id, Usuario.nombre, Agenda.fecha AS fecha_ocupada, Usuario.tipo 
+                                    FROM Usuario
+                                    LEFT JOIN Agenda
+                                    ON Usuario.id = Agenda.id_usuario
+                                    WHERE (fecha_ocupada <> ? OR fecha_ocupada IS NULL) 
+                                    AND Usuario.tipo IN ('TEspecializado', 'EqTecnico');""", 
+                                    (fecha,))
 
         return(self.cursor.fetchall())
     
@@ -192,6 +196,7 @@ def registro_usuario(db:GestorDB):
 
 #Historia de Usuario 3     
 def crear_solicitud():
+        os.system('cls')
         preguntas = {
         "id_cliente": "Ingrese el id del cliente: ",
         "id_usuario":"Ingrese su id: ",
@@ -246,42 +251,51 @@ def menu():
     print(f"\nBienvenido {usuario_sesion['nombre']}\n")
     tipo = usuario_sesion["tipo"]
 
-    while True:
-        if tipo == 'CTecnico':
-            xd = CTenico()
-            if xd:
-                break
-        elif tipo == 'TEspecializado':
-            pass
-        elif tipo == 'ACliente':
-            pass
-        elif tipo == 'EqTecnico':
-            pass
-
-def CTenico():
-    print("¿Con que vas a trabajar hoy?")
-    opcion = int(input("""Seleciona una opcion del menu
-    1.Registrar empleados
-    2.Añadir solicitudes
-    3.Ver disponibilidad de empleados
-    4.Asignar tecnico especializado
-    5.Salir 
-    Opcion: """))
-    if opcion == 1:
-        registro_usuario(db)
-
-    elif opcion == 2:
-        crear_solicitud()
-
-    elif opcion == 3:
-        ver_agenda_fecha()
-        
-    elif opcion == 4:
+    
+    if tipo == 'CTecnico':
+        CTecnico()         
+    elif tipo == 'TEspecializado':
+        pass
+    elif tipo == 'ACliente':
+        pass
+    elif tipo == 'EqTecnico':
         pass
 
-    elif opcion == 5:
-        print("¡Hasta luego!")
-        return True
+def AtencionCliente():
+    while True:
+        opcion = int(input("""¿Vas a crear una solicitud?
+        Seleciona una opcion del menu
+        1.Generar solicitud 
+        2.Salir
+        Opcion: """))
+        if opcion == 1:
+            crear_solicitud()
+
+        elif opcion == 2:
+            print("¡Hasta luego!")
+            break
+
+def CTecnico():
+    while True:
+        print("¿Con que vas a trabajar hoy?")
+        opcion = int(input("""Seleciona una opcion del menu
+        1.Registrar empleados
+        2.Ver disponibilidad de empleados
+        3.Asignar tecnico especializado
+        4.Salir 
+        Opcion: """))
+        if opcion == 1:
+            registro_usuario(db)
+
+        elif opcion == 2:
+            ver_agenda_fecha()
+
+        elif opcion == 3:
+            pass
+            
+        else:
+            print("¡Hasta luego!")
+            break
 
 # Crear una instancia de la base de datos
 db = GestorDB()
