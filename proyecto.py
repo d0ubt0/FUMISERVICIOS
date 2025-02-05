@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import re
 from Usuario import Usuario
 
 class Solicitud:
@@ -247,7 +248,13 @@ def ver_agenda_empleado():
         print("Por favor ingrese un id válido")
 
 def ver_agenda_fecha():
-    fecha = input("Ingrese una fecha para ver los empleados disponibles: ")
+    while True:
+        fecha = input("Ingrese una fecha para ver los empleados disponibles (yyyy-mm-dd): ")
+        regex_fecha = r'\b(20[0-9]{2}|19[0-9]{2})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\b'
+        if re.match(regex_fecha,fecha):
+            break
+        else:
+            print("Formato de fecha invalida")
     try:
         print(f"Empleados disponibles:\n")
         empleados = db.agenda_fecha(fecha)
@@ -255,6 +262,8 @@ def ver_agenda_fecha():
             print(f"id: {empleado[0]}, Nombre: {empleado[1]}, Rol: {empleado[3]}")
     except ValueError:
         print("Por favor ingrese una fecha válida")
+
+#5 Historia de Usuario
 
 def menu():
     os.system('cls')
