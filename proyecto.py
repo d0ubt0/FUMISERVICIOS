@@ -106,12 +106,10 @@ y
         Returns:
             list[any]: Retorna una lista con los usuarios disponibles en una fecha
         """
-        self.cursor.execute(f"""SELECT Usuario.id, Usuario.nombre, Agenda.fecha AS fecha_ocupada, Usuario.tipo 
-                                    FROM Usuario
-                                    LEFT JOIN Agenda
-                                    ON Usuario.id = Agenda.id_usuario
-                                    WHERE (fecha_ocupada <> ? OR fecha_ocupada IS NULL) 
-                                    AND Usuario.tipo IN ('TEspecializado', 'EqTecnico');""", 
+        self.cursor.execute(f""" SELECT U.id, U.nombre, U.tipo
+            FROM Usuario U
+            LEFT JOIN Agenda A ON U.id = A.id_usuario AND A.fecha = ? 
+            WHERE A.id_usuario IS NULL AND U.tipo in ('TEspecializado', 'EqTecnico');""", 
                                     (fecha,))
 
         return(self.cursor.fetchall())
@@ -266,7 +264,7 @@ def ver_agenda_fecha():
         print(f"Empleados disponibles:\n")
         empleados = db.agenda_fecha(fecha)
         for empleado in empleados:
-            print(f"id: {empleado[0]}, Nombre: {empleado[1]}, Rol: {empleado[3]}")
+            print(f"id: {empleado[0]}, Nombre: {empleado[1]}, Rol: {empleado[2]}")
     except ValueError:
         print("Por favor ingrese una fecha válida")
 
