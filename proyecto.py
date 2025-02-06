@@ -72,18 +72,20 @@ class GestorDB:
     def ver_solicitudes(self):
         self.cursor.execute('SELECT * FROM Solicitud')
         return self.cursor.fetchall()
+    
+    def ver_empleados(self):
+        self.cursor.execute('SELECT * FROM Usuario')
+        return self.cursor.fetchall()
 
-      
     def leer_usuario(self, id:int):
         self.cursor.execute("SELECT * FROM Usuario WHERE id= ? " , (id,))
         return(self.cursor.fetchone())
 
     def agenda_empleado(self, id:int) -> list[any]:
         """Funcion dedicada a cumplir la HU4, permitiendo ver la disponibilidad de un empleado.
-
-        Args:
+ 
             id (int): id del empleado a buscar
-
+y
         Returns:
             list[any]: Retorna una lista con el usuario y los dias en los que está ocupado
         """        
@@ -155,6 +157,8 @@ def iniciar_sesion():
 
 #Historia de Usuario 2
 def registro_usuario(db:GestorDB):
+    os.system('cls')
+    print("Registro de Usuario")
     def idFun():
         while True:
             id =input("Ingresa la cedula: ").strip()
@@ -206,6 +210,7 @@ def registro_usuario(db:GestorDB):
     email= emailFun()
 
     db.ingresar_usuario(id,nombre,email,contrasena,tipo)
+    
 
 #Historia de Usuario 3     
 def crear_solicitud():
@@ -213,7 +218,7 @@ def crear_solicitud():
         preguntas = {
         "id_cliente": "Ingrese el id del cliente: ",
         "id_usuario":"Ingrese su id: ",
-        "descripcion":"Ingrese la descripciÃ³n del problema: ",
+        "descripcion":"Ingrese la descripcin del problema: ",
         "servicio":"Ingrese el tipo de servicio: ",
         "direccion":"Ingrese la direccion del cliente: ",
             }
@@ -238,6 +243,7 @@ def crear_solicitud():
 
 #Historia de Usuario 4
 def ver_agenda_empleado():
+    os.system('cls')
     id = int(input("Ingrese el id del Empleado: "))
     try:
         print("Fechas no disponibles:")
@@ -248,9 +254,10 @@ def ver_agenda_empleado():
         print("Por favor ingrese un id válido")
 
 def ver_agenda_fecha():
+    os.system('cls')
     while True:
         fecha = input("Ingrese una fecha para ver los empleados disponibles (yyyy-mm-dd): ")
-        regex_fecha = r'\b(20[0-9]{2}|19[0-9]{2})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\b'
+        regex_fecha = r'\b(20[2-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\b'
         if re.match(regex_fecha,fecha):
             break
         else:
@@ -263,57 +270,71 @@ def ver_agenda_fecha():
     except ValueError:
         print("Por favor ingrese una fecha válida")
 
-#5 Historia de Usuario
+#Historia de Usuario 5
+def ver_solicitudes():
+    os.system('cls')
+    print("Historial de solicitudes")
+    print('ID | Id del Cliente | Id del usuario | Fecha de solicitud | Estado actual | Descripcion | Tipo_Servicio | Direccion')
+    for solicitud in db.ver_solicitudes():
+        print(" | ".join(map(str,solicitud)))
+    print()
 
+def ver_empleados():
+    os.system('cls')
+    print("Empleados actuales")
+    print("ID | Nombre | Correo Electronico | Contraseña | Tipo")
+    for solicitud in db.ver_empleados():
+        print(" | ".join(map(str,solicitud)))
+    print()
+    
+    
 def menu():
     os.system('cls')
     usuario_sesion = iniciar_sesion()
 
-    print(f"\nBienvenido {usuario_sesion['nombre']}\n")
+    print(f"\nBienvenido {usuario_sesion['nombre']}\n Rol: {usuario_sesion['tipo']}\n")
     tipo = usuario_sesion["tipo"]
 
-    
     if tipo == 'CTecnico':
         CTecnico()         
     elif tipo == 'TEspecializado':
         pass
     elif tipo == 'ACliente':
-        pass
+        AtencionCliente()
     elif tipo == 'EqTecnico':
         pass
 
 def AtencionCliente():
     while True:
-        opcion = int(input("""¿Vas a crear una solicitud?
+        opcion = input("""¿Vas a crear una solicitud?
         Seleciona una opcion del menu
         1.Generar solicitud 
         2.Salir
-        Opcion: """))
-        if opcion == 1:
+        Opcion: """)
+        if opcion == "1":
             crear_solicitud()
-
-        elif opcion == 2:
+        else:
             print("¡Hasta luego!")
             break
 
 def CTecnico():
     while True:
         print("¿Con que vas a trabajar hoy?")
-        opcion = int(input("""Seleciona una opcion del menu
+        opcion = input("""Seleciona una opcion del menu
         1.Registrar empleados
         2.Ver disponibilidad de Tecnico Especializados
-        3.Asignar tecnico especializado
-        4.Salir 
-        Opcion: """))
-        if opcion == 1:
+        3.Ver historial de solicitudes
+        4.Ver empleados
+        5.Salir 
+        Opcion: """)
+        if opcion == "1":
             registro_usuario(db)
-
-        elif opcion == 2:
+        elif opcion == "2":
             ver_agenda_fecha()
-
-        elif opcion == 3:
-            pass
-            
+        elif opcion == "3":
+            ver_solicitudes()
+        elif opcion == "4":
+            ver_empleados()
         else:
             print("¡Hasta luego!")
             break
