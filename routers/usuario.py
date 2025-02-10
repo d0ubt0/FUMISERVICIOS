@@ -32,7 +32,7 @@ db = GestorDB()
 router = APIRouter()
 
 #Ver los primeros 10 o limit usuarios
-@router.get('/users')
+@router.get('/usuarios')
 async def users(limit: int = 10):
     usuarios = db.ver_usuarios(limit)
     usuarios_json = [Usuario(id = usuario[0],nombre = usuario[1],email = usuario[2], contrasena = usuario[3],tipo = usuario[4]) for usuario in usuarios]
@@ -40,7 +40,7 @@ async def users(limit: int = 10):
 
 
 #Agregar usuario
-@router.post('/users')
+@router.post('/usuario')
 async def users(user:Usuario):
     try:
         db.agregar_usuario(user)
@@ -50,7 +50,7 @@ async def users(user:Usuario):
 
 
 #Ver un usuario en especifico
-@router.get('/users/{id}')
+@router.get('/usuario/{id}')
 async def users(id:int):
     db.cursor.execute("SELECT * FROM USUARIO WHERE ID = ? ", (id,))
     usuario = db.cursor.fetchone()
