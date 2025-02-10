@@ -21,7 +21,6 @@ async def obtener_usuarios(limit: int = 10):
         return {'message': 'No hay usuarios'}
     return usuarios
 
-
 #Agregar usuario
 @router.post('/usuario')
 async def agregar_usuario(usuario:Usuario):
@@ -30,7 +29,6 @@ async def agregar_usuario(usuario:Usuario):
         return {'message': 'Usuario creado correctamente'}
     except ValueError as error:
         raise HTTPException(400,str(error))
-
 
 #Ver un usuario en especifico
 @router.get('/usuario/{id}')

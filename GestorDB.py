@@ -39,7 +39,6 @@ class GestorDB:
             with sqlite3.connect(self.path_db) as conexion:
                 cursor = conexion.cursor()
                 cursor.execute("INSERT INTO USUARIO (id,nombre,email,contrasena,tipo) VALUES (?,?,?,?,?)",(usuario.id,usuario.nombre,usuario.email,usuario.contrasena,usuario.tipo))
-                time.sleep(20)
                 conexion.commit()
         except sqlite3.IntegrityError:
             raise ValueError("ID o Email ya existen")
