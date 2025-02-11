@@ -1,14 +1,15 @@
-from fastapi import APIRouter ,HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, EmailStr, Field 
 from GestorDB import GestorDB
+from typing import Literal
 
 
 class Usuario(BaseModel):
-    id: int
-    nombre: str
-    email: str
-    contrasena: str
-    tipo: str
+    id: int = Field(gt = 0)
+    nombre: str 
+    email: EmailStr
+    contrasena: str = Field(min_length=8,max_length=25)
+    tipo: Literal["CTecnico","TEspecializado" ,"ACliente" ,"EqTecnico"]    
 
 db = GestorDB()
 router = APIRouter()
