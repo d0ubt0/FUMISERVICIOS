@@ -36,13 +36,19 @@ class GestorDB:
 
     def agregar_usuario(self,usuario):
         try:
-            with sqlite3.connect(self.path_db) as conexion:
-                cursor = conexion.cursor()
-                cursor.execute("INSERT INTO USUARIO (id,nombre,email,contrasena,tipo) VALUES (?,?,?,?,?)",(usuario.id,usuario.nombre,usuario.email,usuario.contrasena,usuario.tipo))
-                conexion.commit()
+            self.cursor.execute("INSERT INTO USUARIO (id,nombre,email,contrasena,tipo) VALUES (?,?,?,?,?)",(usuario.id,usuario.nombre,usuario.email,usuario.contrasena,usuario.tipo))
+            self.conexion.commit()
         except sqlite3.IntegrityError:
             raise ValueError("ID o Email ya existen")
+        
+    def eliminar_usuario(self,id: int):
+        self.cursor.execute("DELETE FROM USUARIO WHERE ID = ?",(id,))
+        self.conexion.commit()
+        self.cursor.execute("SELECT changes()")
+        return self.cursor.fetchone()[0]
+        
 
     def cerrar_conexion(self):
         if self.conexion:
             self.conexion.close() 
+
