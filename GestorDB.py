@@ -52,6 +52,3 @@ class GestorDB:
         if self.conexion:
             self.conexion.close() 
 
-db = GestorDB()
-
-print(db.eliminar_usuario(1234))
