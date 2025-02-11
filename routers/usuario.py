@@ -38,6 +38,15 @@ async def obtener_usuario(id:int):
     if not usuario:
         raise HTTPException(400, 'Usuario no encontrado')
     return usuario
+
+#Eliminar un usuario en especifico
+@router.delete('/usuario/{id}')
+async def eliminar_usuario(id:int):
+    cantidad_eliminado = db.eliminar_usuario(id)
+    if cantidad_eliminado == 0:
+        raise HTTPException(400, 'Usuario no encontrado')
+    return {'message' : 'Usuario eliminado correctamente'}
+    
     
 
 
