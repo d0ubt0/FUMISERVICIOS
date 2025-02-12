@@ -31,7 +31,7 @@ async def solicitudes(limit:int = 10):
     query_result = db.cursor.fetchall()
 
     # formateo para json
-    solicitudes = list(map( lambda solicitud : Solicitud(**dict(solicitud)), query_result))
+    solicitudes = [Solicitud(**solicitud) for solicitud in query_result]
     
     db.cerrar_conexion()
 
