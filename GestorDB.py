@@ -30,8 +30,16 @@ class GestorDB:
         self.cursor.execute("SELECT * FROM USUARIO LIMIT ?",(limit, ))
         return self.cursor.fetchall()
     
+    def ver_clientes(self,limit: int):
+        self.cursor.execute("SELECT * FROM CLIENTE LIMIT ?",(limit, ))
+        return self.cursor.fetchall()
+    
     def ver_usuario(self, id: int):
         self.cursor.execute("SELECT * FROM USUARIO WHERE ID = ? ", (id,))
+        return self.cursor.fetchone()
+    
+    def ver_cliente(self, id: int):
+        self.cursor.execute("SELECT * FROM CLIENTE WHERE ID = ? ", (id,))
         return self.cursor.fetchone()
 
     def agregar_usuario(self,usuario):
@@ -41,8 +49,21 @@ class GestorDB:
         except sqlite3.IntegrityError:
             raise ValueError("ID o Email ya existen")
         
+    def agregar_cliente(self, cliente):
+        try:
+            self.cursor.execute("INSERT INTO CLIENTE (id,nombre,telefono,email) VALUES (?,?,?,?)",(cliente.id,cliente.nombre,cliente.telefono,cliente.email))
+            self.conexion.commit()
+        except sqlite3.IntegrityError:
+            raise ValueError("ID, email o telefono ya existen")
+        
     def eliminar_usuario(self,id: int):
         self.cursor.execute("DELETE FROM USUARIO WHERE ID = ?",(id,))
+        self.conexion.commit()
+        self.cursor.execute("SELECT changes()")
+        return self.cursor.fetchone()[0]
+    
+    def eliminar_cliente(self,id: int):
+        self.cursor.execute("DELETE FROM CLIENTE WHERE ID = ?",(id,))
         self.conexion.commit()
         self.cursor.execute("SELECT changes()")
         return self.cursor.fetchone()[0]

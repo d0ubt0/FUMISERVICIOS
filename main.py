@@ -5,7 +5,7 @@ app = FastAPI()
 
 app.include_router(usuario.router)
 app.include_router(solicitud.router)
-app.include_router(solicitud.router)
+app.include_router(cliente.router)
 
 @app.get('/')
 async def hola():
