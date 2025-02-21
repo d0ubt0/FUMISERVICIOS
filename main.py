@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import usuario, solicitud, cliente
+from routers import usuario, solicitud, cliente, agenda
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,6 +8,7 @@ app = FastAPI()
 app.include_router(usuario.router)
 app.include_router(solicitud.router)
 app.include_router(cliente.router)
+app.include_router(agenda.router)
 
 @app.get('/')
 async def hola():
@@ -15,7 +16,13 @@ async def hola():
 
 origins = [
     
-    'http://localhost:2999'
+    'http://localhost:2999',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002'
+    'http://localhost:3003',
+    'http://localhost:3004'
+
 ]
 
 app.add_middleware(
