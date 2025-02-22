@@ -10,7 +10,7 @@ class GestorDB:
         self.cursor.execute("PRAGMA foreign_keys = ON;")
         
 
-    def abrir_conexion(self, path_db = 'fumiservicios.db', as_dict = False):
+    def abrir_conexion(self, path_db = 'fumiservicios.db', as_dict = True):
         """Abre conexion con la base de datos usando sqlite3
 
         Args:

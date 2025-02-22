@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, Field 
 from GestorDB import GestorDB
 from typing import Literal
-
+from time import sleep
 
 class Usuario(BaseModel):
     id: int = Field(gt = 0)
