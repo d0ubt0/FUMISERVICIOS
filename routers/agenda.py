@@ -4,7 +4,7 @@ from GestorDB import GestorDB
 from typing import Literal
 from datetime import date
 
-class Solicitud(BaseModel):
+class Agenda(BaseModel):
     id : int = Field(gt = 0)
     id_usuario : int = Field(gt = 0)
     fecha : date
