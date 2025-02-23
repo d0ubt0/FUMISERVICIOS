@@ -40,9 +40,9 @@ async def solicitud(solicitud:Solicitud):
     try:
         db.abrir_conexion()
         db.cursor.execute('''INSERT INTO Solicitud
-                          (id_cliente, id_usuario, estado, descripcion, tipo_servicio, direccion)
-                          VALUES (?,?,?,?,?,?)''',
-                          (solicitud.id_cliente, solicitud.id_usuario, solicitud.estado, solicitud.descripcion, solicitud.tipo_servicio, solicitud.direccion))
+                          (id_cliente, id_usuario, descripcion, tipo_servicio, direccion)
+                          VALUES (?,?,?,?,?)''',
+                          (solicitud.id_cliente, solicitud.id_usuario, solicitud.descripcion, solicitud.tipo_servicio, solicitud.direccion))
         db.conexion.commit()
         return {'message': 'Solicitud creada correctamente'}
 
