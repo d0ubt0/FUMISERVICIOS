@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from routers import usuario, solicitud, cliente, agenda
+from routers import usuario, solicitud, cliente, agenda, login
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,6 +10,7 @@ app.include_router(usuario.router)
 app.include_router(solicitud.router)
 app.include_router(cliente.router)
 app.include_router(agenda.router)
+app.include_router(login.router)
 
 @app.get('/')
 async def hola():

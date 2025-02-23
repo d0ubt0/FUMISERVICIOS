@@ -4,7 +4,7 @@ import time
 class GestorDB:
     def __init__(self, path_db = 'fumiservicios.db'):
         self.path_db = path_db
-        self.conexion = sqlite3.connect(path_db)
+        self.conexion = sqlite3.connect(path_db,check_same_thread= False)
         self.conexion.row_factory = sqlite3.Row
         self.cursor = self.conexion.cursor()
         self.cursor.execute("PRAGMA foreign_keys = ON;")
@@ -67,6 +67,10 @@ class GestorDB:
         self.conexion.commit()
         self.cursor.execute("SELECT changes()")
         return self.cursor.fetchone()[0]
+    
+    def comprobar_usuario(self, id: int, contrasena: str):
+        self.cursor.execute('SELECT * FROM USUARIO WHERE ID = ? AND CONTRASENA = ?' , (id, contrasena))
+        return self.cursor.fetchone()
         
 
     def cerrar_conexion(self):

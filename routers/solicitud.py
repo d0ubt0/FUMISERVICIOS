@@ -3,22 +3,11 @@ from pydantic import BaseModel, Field
 from GestorDB import GestorDB
 from typing import Literal, Optional
 from fastapi import HTTPException
+from schemas import Solicitud
 import sqlite3
 
 router = APIRouter(prefix='/solicitud')
 db = GestorDB()
-
-class Solicitud(BaseModel):
-    id : Optional[int] = None
-    id_cliente : int = Field(gt = 0)
-    id_usuario : int = Field(gt = 0)
-    fecha : Optional[str] = None
-    estado : str = Literal['Aceptado', 'En Espera', 'Rechazado']
-    descripcion : str
-    tipo_servicio : str 
-    direccion : str
-
-
 
 # ver historial de solicitudes
 @router.get('/')

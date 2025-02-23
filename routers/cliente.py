@@ -3,12 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field 
 from GestorDB import GestorDB
 from typing import Literal
-
-class Cliente(BaseModel):
-    id: int = Field(gt = 0)
-    nombre: str 
-    telefono: int
-    email: EmailStr    
+from schemas import Cliente    
 
 db = GestorDB()
 router = APIRouter(prefix='/cliente')
@@ -36,7 +31,7 @@ async def obtener_cliente(id:int) -> Cliente:
     cliente = db.ver_cliente(id)
     if not cliente:
         raise HTTPException(400, 'Cliente no encontrado')
-    return cliente(**cliente)
+    return Cliente(**cliente)
 
 #Eliminar un cliente en especifico
 @router.delete('/{id}')
