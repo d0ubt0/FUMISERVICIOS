@@ -41,7 +41,6 @@ class UsuarioOut(BaseModel):
     id: int = Field(gt = 0)
     nombre: str 
     email: EmailStr
-    contrasena: str = contrasena_restriccion
     tipo: tipo_usuario_restriccion 
 
 class UsuarioLogin(BaseModel):
