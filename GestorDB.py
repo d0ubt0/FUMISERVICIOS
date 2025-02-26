@@ -72,6 +72,16 @@ class GestorDB:
         self.cursor.execute('SELECT * FROM USUARIO WHERE ID = ? AND CONTRASENA = ?' , (id, contrasena))
         return self.cursor.fetchone()
         
+    # SOLICITUD
+
+    def ver_solicitudes(self):
+        pass
+
+    def ver_solicitudes_con_nombre(self):
+        pass
+
+    def crear_solicitud(self):
+        pass
 
     def cerrar_conexion(self):
         if self.conexion:
