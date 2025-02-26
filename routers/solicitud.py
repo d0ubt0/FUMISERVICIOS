@@ -1,9 +1,7 @@
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
 from GestorDB import GestorDB
-from typing import Literal, Optional
 from fastapi import HTTPException
-from schemas import Solicitud
+from schemas import Solicitud, SolicitudIn, SolicitudOut
 import sqlite3
 
 router = APIRouter(prefix='/solicitud')
@@ -11,90 +9,38 @@ db = GestorDB()
 
 # ver historial de solicitudes
 @router.get('/')
-async def solicitud(skip:int = 0, limit:int = 10):
-
+async def solicitud(skip:int = 0, limit:int = 10) -> list[SolicitudOut]:
     try:
-        db.abrir_conexion()
-
-        # query
-        db.cursor.execute("SELECT * FROM Solicitud LIMIT ? OFFSET ?",(limit, skip))
-        solicitudes = db.cursor.fetchall()
-
-        db.cerrar_conexion()
-        return solicitudes
-
-    except sqlite3.Error as error:
-        raise HTTPException(400,f'sqlite error: {str(error)}')   
-
+        solicitudes = db.ver_solicitudes(skip, limit)
+        return [SolicitudOut(**dict(solicitud)) for solicitud in solicitudes]
     except Exception as error:
         raise HTTPException(400,str(error))
-    
-    finally:
-        db.cerrar_conexion()
-
-
 
 # añadir solicitud
 @router.post('/')
-async def solicitud(solicitud:Solicitud):
+async def solicitud(solicitud:SolicitudIn):
     try:
-        db.abrir_conexion()
-        db.cursor.execute('''INSERT INTO Solicitud
-                          (id_cliente, id_usuario, descripcion, tipo_servicio, direccion)
-                          VALUES (?,?,?,?,?)''',
-                          (solicitud.id_cliente, solicitud.id_usuario, solicitud.descripcion, solicitud.tipo_servicio, solicitud.direccion))
-        db.conexion.commit()
+        db.agregar_solicitud(solicitud)
         return {'message': 'Solicitud creada correctamente'}
-
-    except sqlite3.Error as error:
-        raise HTTPException(400,f'sqlite error: {str(error)}')   
-
     except Exception as error:
         raise HTTPException(400,str(error))
-    
-    finally:
-        db.cerrar_conexion()
-
-
 
 # buscar solicitud
 @router.get('/{id}')
-async def solicitud(id:int):
+async def solicitud(id:int) -> SolicitudOut:
     try:
-        db.abrir_conexion()
-        solicitud = db.conexion.execute('''SELECT * FROM solicitud WHERE id = ?''', (id,)).fetchone()
+        solicitud = db.ver_solicitud(id)
         if not solicitud:
             raise HTTPException(400,"Usuario no Encontrado")
-        return solicitud
-    
-    except sqlite3.Error as error:
-        raise HTTPException(400,f'sqlite error: {str(error)}')   
-
+        return SolicitudOut(**solicitud)
     except Exception as error:
         raise HTTPException(400,str(error))
-    
-    finally:
-        db.cerrar_conexion()
-
-
 
 # añadir id_usuario a solicitud
-@router.put('/{id}')
+@router.put('/usuario/')
 async def solicitud(id:int, id_usuario:int = None):
     try:
-        db.abrir_conexion()
-        db.conexion.execute(''' UPDATE Solicitud
-                                SET id_usuario = ?
-                                WHERE id = ?''',
-                                (id_usuario, id)).fetchone()
-        db.conexion.commit()
-        return {'message' : f'Usuario agregado correctamente a la solicitud con id = {id}'}
-
-    except sqlite3.Error as error:
-        raise HTTPException(400,f'sqlite error: {str(error)}')   
-
+        db.agregar_usuario_solicitud(id, id_usuario)
+        return {'message' : f'Usuario {id_usuario} agregado correctamente a la solicitud con id = {id}'}
     except Exception as error:
         raise HTTPException(400,str(error))
-    
-    finally:
-        db.cerrar_conexion()

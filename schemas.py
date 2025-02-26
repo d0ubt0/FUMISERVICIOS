@@ -20,12 +20,32 @@ class Cliente(BaseModel):
     telefono: int
     email: EmailStr
 
+# se mantiene por compatibilidad momentanea
 class Solicitud(BaseModel):
     id : Optional[int] = None
     id_cliente : int = Field(gt = 0)
     id_usuario : int = Field(gt = 0)
     fecha : Optional[str] = None
     estado : Literal['Aceptado', 'En Espera', 'Rechazado'] = 'En Espera'
+    descripcion : str
+    tipo_servicio : str 
+    direccion : str
+
+class SolicitudIn(BaseModel):
+    id_cliente : int = Field(gt = 0)
+    id_usuario : Optional[int] = None
+    descripcion : str
+    tipo_servicio : str 
+    direccion : str
+
+class SolicitudOut(BaseModel):
+    id : int = Field(gt = 0)
+    id_cliente : int = Field(gt = 0)
+    nombre_cliente : str
+    id_usuario : Optional[int] 
+    nombre_usuario : Optional[str]
+    fecha : str
+    estado : Literal['Aceptado', 'En Espera', 'Rechazado']
     descripcion : str
     tipo_servicio : str 
     direccion : str

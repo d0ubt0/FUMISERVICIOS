@@ -78,14 +78,49 @@ class GestorDB:
         
     # SOLICITUD
 
-    def ver_solicitudes(self):
-        pass
+    def ver_solicitudes(self, skip:int, limit:int):
+        try:
+            self.cursor.execute('''SELECT Solicitud.id, Solicitud.id_cliente, Cliente.nombre as nombre_cliente,
+                                    Solicitud.id_usuario, Usuario.nombre as nombre_usuario, Solicitud.fecha, Solicitud.estado,
+                                    Solicitud.descripcion, Solicitud.tipo_servicio, Solicitud.direccion FROM Solicitud
+                                    LEFT JOIN Usuario ON Solicitud.id_usuario = Usuario.id
+                                    LEFT JOIN Cliente ON Solicitud.id_cliente = Cliente.id
+                                    LIMIT ? OFFSET ?''',(limit, skip))
+            return self.cursor.fetchall()
+        except sqlite3.Error as error:
+            raise error
 
-    def ver_solicitudes_con_nombre(self):
-        pass
+    def ver_solicitud(self, id:int):
+        try:
+            self.cursor.execute('''SELECT Solicitud.id, Solicitud.id_cliente, Cliente.nombre as nombre_cliente,
+                                    Solicitud.id_usuario, Usuario.nombre as nombre_usuario, Solicitud.fecha, Solicitud.estado,
+                                    Solicitud.descripcion, Solicitud.tipo_servicio, Solicitud.direccion FROM Solicitud
+                                    LEFT JOIN Usuario ON Solicitud.id_usuario = Usuario.id
+                                    LEFT JOIN Cliente ON Solicitud.id_cliente = Cliente.id
+                                    WHERE Solicitud.id = ? ''', (id,))
+            return self.cursor.fetchone()
+        except sqlite3.Error as error:
+            raise error
 
-    def crear_solicitud(self):
-        pass
+    def agregar_solicitud(self,solicitud):
+        try:
+            self.cursor.execute('''INSERT INTO Solicitud
+                                (id_cliente, id_usuario, descripcion, tipo_servicio, direccion)
+                                VALUES (?,?,?,?,?)''',
+                                (solicitud.id_cliente, solicitud.id_usuario, solicitud.descripcion, solicitud.tipo_servicio, solicitud.direccion))
+            self.conexion.commit()
+        except sqlite3.Error as error:
+            raise error
+        
+    def agregar_usuario_solicitud(self, id, id_usuario):
+        try:
+            self.cursor.execute(''' UPDATE Solicitud
+                                    SET id_usuario = ?
+                                    WHERE id = ?''',
+                                    (id_usuario, id))
+            self.conexion.commit()
+        except sqlite3.Error as error:
+            raise error
 
     def cerrar_conexion(self):
         if self.conexion:
