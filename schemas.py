@@ -25,7 +25,7 @@ class Solicitud(BaseModel):
     id_cliente : int = Field(gt = 0)
     id_usuario : int = Field(gt = 0)
     fecha : Optional[str] = None
-    estado : Literal['Aceptado', 'En Espera', 'Rechazado']
+    estado : Literal['Aceptado', 'En Espera', 'Rechazado'] = 'En Espera'
     descripcion : str
     tipo_servicio : str 
     direccion : str
