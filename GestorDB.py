@@ -1,5 +1,7 @@
 import sqlite3
-import time
+#from schemas import UsuarioIn, Cliente
+#Da error desconocido al importar :(
+
 
 class GestorDB:
     def __init__(self, path_db = 'fumiservicios.db'):
@@ -48,7 +50,13 @@ class GestorDB:
         self.conexion.commit()
         self.cursor.execute("SELECT changes()")
         return self.cursor.fetchone()[0]
-    
+
+    def actualizar_cliente(self, cliente):
+        self.cursor.execute("UPDATE cliente SET nombre = ? , telefono = ?, email = ? WHERE id = ?", (cliente.nombre,cliente.telefono,cliente.email, cliente.id))
+        self.conexion.commit()
+        self.cursor.execute("SELECT changes()")
+        return self.cursor.fetchone()[0]
+        
     #USUARIO
 
     def ver_usuarios(self,limit: int):
@@ -75,6 +83,12 @@ class GestorDB:
     def comprobar_usuario(self, id: int, contrasena: str):
         self.cursor.execute('SELECT * FROM USUARIO WHERE ID = ? AND CONTRASENA = ?' , (id, contrasena))
         return self.cursor.fetchone()
+    
+    def actualizar_usuario(self, usuario):
+        self.cursor.execute("UPDATE usuario SET nombre = ? , email = ?, contrasena = ?, tipo = ? WHERE id = ?", (usuario.nombre,usuario.email,usuario.contrasena, usuario.tipo, usuario.id))
+        self.conexion.commit()
+        self.cursor.execute("SELECT changes()")
+        return self.cursor.fetchone()[0]
         
     # SOLICITUD
 

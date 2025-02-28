@@ -40,3 +40,12 @@ async def eliminar_cliente(id:int):
     if cantidad_eliminado == 0:
         raise HTTPException(400, 'Cliente no encontrado')
     return {'message' : 'Cliente eliminado correctamente'}
+
+
+#Actualizar un cliente en especifico
+@router.put('/')
+async def actualizar_cliente(cliente: Cliente):
+    cantidad_actualizado = db.actualizar_cliente(cliente)
+    if cantidad_actualizado == 0:
+        raise HTTPException(404, 'Cliente no encontrado')
+    return {'message' : 'Cliente actualizado correctamente'}

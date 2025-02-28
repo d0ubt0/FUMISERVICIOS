@@ -30,7 +30,7 @@ async def agregar_usuario(usuario:UsuarioIn):
 async def obtener_usuario(id:int) -> UsuarioOut:
     usuario = db.ver_usuario(id)
     if not usuario:
-        raise HTTPException(400, 'Usuario no encontrado')
+        raise HTTPException(404, 'Usuario no encontrado')
     return UsuarioOut(**usuario)
 
 #Eliminar un usuario en especifico
@@ -38,8 +38,16 @@ async def obtener_usuario(id:int) -> UsuarioOut:
 async def eliminar_usuario(id:int):
     cantidad_eliminado = db.eliminar_usuario(id)
     if cantidad_eliminado == 0:
-        raise HTTPException(400, 'Usuario no encontrado')
+        raise HTTPException(404, 'Usuario no encontrado')
     return {'message' : 'Usuario eliminado correctamente'}
+
+#Actualizar un usuario en especifico
+@router.put('/')
+async def actualizar_usuario(usuario: UsuarioIn):
+    cantidad_actualizado = db.actualizar_usuario(usuario)
+    if cantidad_actualizado == 0:
+        raise HTTPException(404, 'Usuario no encontrado')
+    return {'message' : 'Usuario actualizado correctamente'}
     
     
 
