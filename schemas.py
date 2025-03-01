@@ -8,11 +8,17 @@ tipo_usuario_restriccion = Literal["CTecnico","TEspecializado" ,"ACliente" ,"EqT
 contrasena_restriccion = Field(min_length=8,max_length=25)
 
 
-class Agenda(BaseModel):
+class AgendaIn(BaseModel):
     id : int = Field(gt = 0)
     id_usuario : int = Field(gt = 0)
     fecha : date
-    tipo_actividad : Literal['Diagnostico', 'Servicio']
+    tipo_actividad : Literal['diagnostico', 'servicio']
+
+class AgendaOut(BaseModel):
+    id : int = Field(gt = 0)
+    id_usuario : int = Field(gt = 0)
+    fecha : date
+    tipo_actividad : Literal['diagnostico', 'servicio']
 
 class Cliente(BaseModel):
     id: int = Field(gt = 0)
