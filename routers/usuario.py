@@ -48,6 +48,16 @@ async def actualizar_usuario(usuario: UsuarioIn):
     if cantidad_actualizado == 0:
         raise HTTPException(404, 'Usuario no encontrado')
     return {'message' : 'Usuario actualizado correctamente'}
+
+#Actualizar el tipo de un usuario especifico
+@router.put('/tipo/')
+async def actualizar_usuario(data: dict):
+    id = data['id']
+    tipo = data['tipo']
+    cantidad_actualizado = db.actualizar_tipo_usuario(id,tipo)
+    if cantidad_actualizado == 0:
+        raise HTTPException(404, 'Usuario no encontrado')
+    return {'message' : 'Usuario actualizado correctamente'}
     
     
 

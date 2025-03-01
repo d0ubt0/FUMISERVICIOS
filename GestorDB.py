@@ -89,6 +89,12 @@ class GestorDB:
         self.conexion.commit()
         self.cursor.execute("SELECT changes()")
         return self.cursor.fetchone()[0]
+    
+    def actualizar_tipo_usuario(self, id, tipo):
+        self.cursor.execute("UPDATE usuario SET tipo = ? WHERE id = ?", (tipo, id))
+        self.conexion.commit()
+        self.cursor.execute("SELECT changes()")
+        return self.cursor.fetchone()[0]
         
     # SOLICITUD
 
