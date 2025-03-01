@@ -136,6 +136,30 @@ class GestorDB:
         except sqlite3.Error as error:
             raise error
 
+# AGENDA
+
+    def ver_disponibilidad_empleado(self, id_usuario):
+        try:
+            self.cursor.execute('''SELECT * FROM Agenda
+                                WHERE id_usuario = ?''', (id_usuario,))
+            return self.cursor.fetchall()
+        except sqlite3.Error as error:
+            raise error
+        
+    def ver_empleados_disponibles(self, fecha):
+        try:
+            self.cursor.execute('''SELECT DISTINCT Usuario.id, Usuario.nombre, Usuario.email, Usuario.tipo FROM Usuario
+                                LEFT JOIN Agenda ON Usuario.id = Agenda.id_usuario
+                                WHERE
+                                Usuario.id NOT IN (
+                                    SELECT DISTINCT Usuario.id FROM Usuario
+                                    LEFT JOIN Agenda ON Usuario.id = Agenda.id_usuario
+                                    WHERE
+                                    Agenda.fecha = ?);''', (fecha,))
+            return self.cursor.fetchall()
+        except sqlite3.Error as error:
+            raise error
+
     def cerrar_conexion(self):
         if self.conexion:
             self.conexion.close() 
