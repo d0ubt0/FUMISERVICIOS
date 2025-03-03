@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from GestorDB import GestorDB
 from fastapi import HTTPException
-from schemas import Solicitud, SolicitudIn, SolicitudOut
+from schemas import Solicitud, SolicitudIn, SolicitudOut, UsuarioOut
 import sqlite3
 
 router = APIRouter(prefix='/solicitud')
@@ -40,7 +40,29 @@ async def solicitud(id:int) -> SolicitudOut:
 @router.put('/usuario/')
 async def solicitud(id:int, id_usuario:int = None):
     try:
+        usuario = db.ver_usuario(id_usuario)
+
+        if not usuario:
+            raise HTTPException(404,'Usuario no encontrado')
+        
+        usuario = UsuarioOut(**usuario)
+
+        if usuario.tipo != 'TEspecializado':
+            raise HTTPException(401, 'Usuario debe ser tecnico especializado')
+
         db.agregar_usuario_solicitud(id, id_usuario)
         return {'message' : f'Usuario {id_usuario} agregado correctamente a la solicitud con id = {id}'}
     except Exception as error:
         raise HTTPException(400,str(error))
+    
+# Cambiar solicitud completa
+@router.put('/')
+async def solicitud(data: dict):
+    cantidad_actualizado = db.actualizar_solicitud(data)
+
+    if cantidad_actualizado == 0:
+        raise HTTPException(404, 'Solicitud no encontrada')
+    
+    return {'message' : 'Solicitud actualizada correctamente'}
+
+    

@@ -141,6 +141,20 @@ class GestorDB:
             self.conexion.commit()
         except sqlite3.Error as error:
             raise error
+        
+    def actualizar_solicitud(self, data):
+        try: 
+            self.cursor.execute("""UPDATE Solicitud
+                SET id_cliente = ?, id_usuario = ?, fecha = ?, estado = ?, descripcion = ?, tipo_servicio = ?, direccion = ?
+                WHERE id = ?""", (data['id_cliente'],data['id_usuario'],data['fecha'],data['estado'],data['descripcion'],data['tipo_servicio'],data['direccion'],data['id'])
+            )
+
+            self.conexion.commit()
+            
+            self.cursor.execute("SELECT changes()")
+            return self.cursor.fetchone()[0]
+        except sqlite3.Error as error:
+            raise error
 
 # AGENDA
 
