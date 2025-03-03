@@ -9,7 +9,6 @@ contrasena_restriccion = Field(min_length=8,max_length=25)
 
 
 class AgendaIn(BaseModel):
-    id : int = Field(gt = 0)
     id_usuario : int = Field(gt = 0)
     fecha : date
     tipo_actividad : Literal['diagnostico', 'servicio']

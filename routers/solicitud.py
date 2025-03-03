@@ -38,20 +38,16 @@ async def solicitud(id:int) -> SolicitudOut:
 
 # añadir id_usuario a solicitud
 @router.put('/usuario/')
-async def solicitud(id:int, id_usuario:int = None):
+async def solicitud(data:dict):
     try:
-        usuario = db.ver_usuario(id_usuario)
-
+        usuario = db.ver_usuario(data["id_usuario"])
         if not usuario:
             raise HTTPException(404,'Usuario no encontrado')
-        
         usuario = UsuarioOut(**usuario)
-
         if usuario.tipo != 'TEspecializado':
             raise HTTPException(401, 'Usuario debe ser tecnico especializado')
-
-        db.agregar_usuario_solicitud(id, id_usuario)
-        return {'message' : f'Usuario {id_usuario} agregado correctamente a la solicitud con id = {id}'}
+        db.agregar_usuario_solicitud(data["id"], data["id_usuario"])
+        return {'message' : f'Usuario {data["id_usuario"]} agregado correctamente a la solicitud con id = {data["id"]}'}
     except Exception as error:
         raise HTTPException(400,str(error))
     
@@ -59,10 +55,6 @@ async def solicitud(id:int, id_usuario:int = None):
 @router.put('/')
 async def solicitud(data: dict):
     cantidad_actualizado = db.actualizar_solicitud(data)
-
     if cantidad_actualizado == 0:
         raise HTTPException(404, 'Solicitud no encontrada')
-    
     return {'message' : 'Solicitud actualizada correctamente'}
-
-    
